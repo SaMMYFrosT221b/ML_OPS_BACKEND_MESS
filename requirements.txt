@@ -1,4 +1,4 @@
-Django==4.2.9
+Django
 joblib
 prophet
 metaflow
