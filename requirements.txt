@@ -1,4 +1,4 @@
-Django
+Django==4.2.9
 joblib==1.4.0
 matplotlib==3.8.4
 metaflow==2.11.10
