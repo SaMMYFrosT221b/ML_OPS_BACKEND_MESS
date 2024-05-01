@@ -1,6 +1,6 @@
 # build_files.sh
 python3.9 -m venv myenv
-source myenv/bin/activate
+source myenv/Scripts/activate
 pip3 install -r requirements.txt
 
 # make migrations
