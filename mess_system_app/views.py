@@ -11,6 +11,67 @@ from prophet import Prophet
 
 
 
+@csrf_exempt
+def slotWiseGraph(request):
+    if request.method == 'POST':
+        hashmap={"galav":"mess-galav","kumar":"mess-kumard","sai":"mess-ssai"}
+        JsonObj =  json.loads(request.body)
+        slot = JsonObj['slot']
+        mess = JsonObj['mess']
+        df = pd.read_csv(f'static/mess_system_app/{hashmap[mess]}.csv',index_col=0)
+        m = Prophet()
+        m.fit(df)
+        from datetime import datetime,timedelta
+        today_date = datetime.now().date()
+        current_timestamp = datetime.now()
+        future_dates = datetime.now()
+        if slot in 'breakfast':
+            current_timestamp = pd.Timestamp(today_date.year,today_date.month,today_date.day,8)
+            future_dates = pd.DataFrame({
+                'ds': pd.date_range(start=current_timestamp, periods=13, freq='10min')
+            })
+        elif slot in 'lunch':
+            current_timestamp = pd.Timestamp(today_date.year,today_date.month,today_date.day,12,30)
+            future_dates = pd.DataFrame({
+                'ds': pd.date_range(start=current_timestamp, periods=13, freq='10min')
+            })
+        elif slot in 'snacks':
+            current_timestamp = pd.Timestamp(today_date.year,today_date.month,today_date.day,17)
+            future_dates = pd.DataFrame({
+                'ds': pd.date_range(start=current_timestamp, periods=7, freq='10min')
+            })
+        elif slot in 'dinner':
+            current_timestamp = pd.Timestamp(today_date.year,today_date.month,today_date.day,20)
+            future_dates = pd.DataFrame({
+                'ds': pd.date_range(start=current_timestamp, periods=13, freq='10min')
+            })
+        else:
+            return JsonResponse({"message":"Incorrect slot value"},status=400)
+        
+
+        # print(future_dates)
+        forecast = m.predict(future_dates)
+        forecast = np.round(forecast)
+
+        # Convert Timestamp objects to string format
+        forecast['ds'] = forecast['ds'].astype(str)
+        # Convert NumPy arrays to lists for JSON serialization
+        future_time_stamp = forecast['ds'].tolist()
+        future_predictions = forecast['yhat'].tolist()
+        future_predictions = [x if x>=0 else x for x in future_predictions]
+
+        # Prepare JSON response
+        data = {
+            "message": "Forecasting of next two hours at interval of 10 minutes",
+            "future_time_stamp": future_time_stamp,
+            "footprint_count": future_predictions
+        }
+        return JsonResponse({"message":data},status = 200)
+
+
+
+
+
 def home(request):
 	return JsonResponse({'message':"Hello World"})
 
@@ -100,16 +161,17 @@ def predict_view(request):
 
 @csrf_exempt
 def popular_dishes(request):
-    data = json.loads(request.body)
-    day_name = data['day_name']
-    time_slot = data['time_slot']
-    # print(data)
-    # print("Current directory ",os.listdir())
-    df = pd.read_csv('static/mess_system_app/Day_Wise_MaxDemand.csv',index_col=0)
-    # print(day_name,time_slot)
-    # print(df.head(2))
-    dish = df.loc[(df['day_name'] == day_name) & (df['time_slot'] == time_slot), 'Food'].iloc[0]
-    return JsonResponse({"Popular dish":dish})
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        day_name = data['day_name']
+        time_slot = data['time_slot']
+        # print(data)
+        # print("Current directory ",os.listdir())
+        df = pd.read_csv('static/mess_system_app/Day_Wise_MaxDemand.csv',index_col=0)
+        # print(day_name,time_slot)
+        # print(df.head(2))
+        dish = df.loc[(df['day_name'] == day_name) & (df['time_slot'] == time_slot), 'Food'].iloc[0]
+        return JsonResponse({"Popular dish":dish})
      
 
 def getGraph(request):
@@ -165,3 +227,4 @@ def getGraph(request):
 
     
     return JsonResponse(data, status=200, safe=False)
+

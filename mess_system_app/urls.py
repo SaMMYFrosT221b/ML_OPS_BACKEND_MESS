@@ -6,5 +6,6 @@ urlpatterns = [
     path('popularDish',views.popular_dishes,name='popular_dishes'),
     path('predict', views.predict_view, name='predict'),
     path('get-latest-footprint-graph', views.getGraph, name='getGraph'),
+    path('slot-graph',views.slotWiseGraph,name='slotWiseGraph'),
 ]
 

@@ -25,8 +25,8 @@ SECRET_KEY = 'django-insecure--ym)lkmsm6@jv1p_%2+ri4b$eh-emah2q@jhd5fb260lna758_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [".vercel.app",".now.sh","127.0.0.1"]
-
+ALLOWED_HOSTS = ['.vercel.app','.now.sh','127.0.0.1','localhost','headphones-replace-inquiries-loan.trycloudflare.com']
+# ALLOWED_HOSTS=['*']
 
 # Application definition
 
@@ -55,7 +55,7 @@ ROOT_URLCONF = 'mess_system_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
